@@ -1,0 +1,102 @@
+<template name="host_index">
+	<div class="container our-contents">
+			{{#if userHostedRoom}}
+			<!-- This is here to make sure the context (the this) in host_index.js is the ROOM... see host_index.js events-->
+			{{#with userHostedRoomContext}}
+				<!--THIS IS WHERE THE PLAYER GOES
+				BECAUSE CURRENTuSER IS THE HOST -->
+			<h2>You're hosting '{{userHostedRoom}}'</h2>
+			<br>
+
+			{{>embed_player}}
+
+			<form class="new-task">
+				<input type="text" name="text" placeholder="Type to add new item. For greater accuracy include artist too." class="input-group form-control">
+				<input type="url" name="url" placeholder="Type YouTube link in the form http:// [url] (or leave blank)" class="input-group form-control">
+				<input type="submit" align="center" class="btn btn-primary new-btn">
+			</form>
+			<br>
+			<div>
+				<button onclick="Meteor.call('tasks.removeAll',Rooms.findOne({text: Session.get('userHostedRoom')})._id)" class="btn btn-danger new-btn">Clear All</button>
+			</div>
+			<br>
+			<!--<a type="button" href="#" class="btn btn-secondary new-btn">Change modes</a>-->
+			<!-- TODO: We need to work with history! -->
+			<a type="button" class="deleteRoom btn btn-danger new-btn">End the jams</a>
+			{{/with}}
+
+			<h2>The Playlist</h2>
+			<!--<button onclick="Meteor.call('getSongs', 'upbeat')">songs</button>-->
+			<table class="table">
+				<thead>
+					<tr>
+					  <th>Close</th>
+					  <th>Name</th>
+					  <th>Song</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{#each tasks}}
+					{{> task}}
+				{{/each}}
+				</tbody>
+			</table>
+			{{else}}
+				<h2>You haven't <a href="{{pathFor 'make_party'}}">created a party</a> yet!</h2>
+			{{/if}}
+
+			<script>
+
+			var video = document.querySelector("#videoElement");
+			var im = document.querySelector("#inlinepic");
+			var canvas = document.querySelector("#can");
+			var p = document.querySelector("#emotion");
+
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+
+			if (navigator.getUserMedia) {
+				navigator.getUserMedia({video: true}, handleVideo, videoError);
+			}
+
+			function handleVideo(stream) {
+				video.src = window.URL.createObjectURL(stream);
+				video.muted = true;
+			}
+
+			function videoError(e) {
+				console.log('AHHHHHHHH the video is not working');
+			}
+			function capture() {
+				var context = canvas.getContext('2d');
+				context.drawImage(video, 0, 0, 200, 155);
+				var dataURL = canvas.toDataURL();
+
+				//create img
+				var img = document.createElement('img');
+				img.setAttribute('src', dataURL);
+
+				im.setAttribute('src', dataURL);
+				im.setAttribute('style', "");
+			}
+		</script>
+		<div id="container">
+			<canvas id="can" style="display: none;"></canvas>
+			<video autoplay id="videoElement"></video>
+		</div>
+
+		<button type="button" class="btn btn-secondary new-btn" id="plz" onClick='capture()'>Capture an emotion</button>
+
+		<img id="inlinepic" style="display:none;">
+		<p id="emotion"></p>
+		<br>
+		<br>
+	</div>
+
+
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+
+</template>
