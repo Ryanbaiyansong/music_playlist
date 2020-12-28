@@ -1,3 +1,3 @@
 # Music Playlist
 
-An online music playlist.
+Online music playlist recommendation.
